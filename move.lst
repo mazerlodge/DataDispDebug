@@ -1,0 +1,40 @@
+     1                                  ; move.asm
+     2                                  section .data
+     3 00000000 7B                      	bNum	db	123
+     4 00000001 3930                    	wNum	dw	12345
+     5 00000003 15CD5B07                	dNum	dd	123456789
+     6 00000007 1581E97DF4102211        	qNum1	dq	1234567890123456789
+     7 0000000F 40E2010000000000        	qNum2	dq	123456
+     8 00000017 1F85EB51B81E0940        	qNum3	dq	3.14
+     9                                  
+    10                                  section .bss
+    11                                  section .text
+    12                                  	global main
+    13                                  main:
+    14 00000000 55                      	push	rbp
+    15 00000001 4889E5                  	mov	rbp, rsp
+    16                                  
+    17 00000004 48C7C0FFFFFFFF          	mov	rax, -1 		; fill rax w/ 1s
+    18 0000000B 8A0425[00000000]        	mov	al, byte [bNum]		; does not clear upper bits of rax
+    19 00000012 4831C0                  	xor	rax, rax 		; clear rax
+    20 00000015 8A0425[00000000]        	mov	al, byte [bNum]		; now rax has the correct value
+    21                                  
+    22 0000001C 48C7C0FFFFFFFF          	mov 	rax, -1			; do it again w/ word 
+    23 00000023 668B0425[01000000]      	mov	ax, word [wNum]
+    24 0000002B 4831C0                  	xor	rax, rax
+    25 0000002E 668B0425[01000000]      	mov 	ax, word [wNum]
+    26                                  
+    27 00000036 48C7C0FFFFFFFF          	mov	rax, -1
+    28 0000003D 8B0425[03000000]        	mov	eax, dword [dNum] 	; does clear upper bits of rax
+    29                                  
+    30 00000044 48C7C0FFFFFFFF          	mov 	rax, -1
+    31 0000004B 488B0425[07000000]      	mov	rax, qword [qNum1]
+    32 00000053 48890425[0F000000]      	mov	qword [qNum2], rax 	; one operand always a register
+    33 0000005B B840E20100              	mov	rax, 123456		; source operand an immediate value
+    34 00000060 F30F7E0425-             	movq	xmm0, [qNum3]		; instruction for floating point
+    34 00000065 [17000000]         
+    35                                  
+    36 00000069 4889EC                  	mov	rsp, rbp
+    37 0000006C 5D                      	pop	rbp
+    38                                  
+    39 0000006D C3                      	ret
